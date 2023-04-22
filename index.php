@@ -1,3 +1,42 @@
+<?php  
+//*start session function
+session_start();
+//creation of pre-defined username and password since database is non existent
+
+$user_name ="FamilleD";
+$user_password ="fam05";
+$user_fullname="Famille Pelaez Decena";
+$user_fulladress="Marinduque PH";
+
+// check url for any redirections
+$url_place ="http://".$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'];
+
+//condition if the button is clicked
+if(isset($_REQUEST['login-button'])=== true){
+	//get username and userpassword and compare it to set predefined
+	//incase if username is wrong
+	if ($_REQUEST['form_username']!= $user_name){
+		header("Location: ".$url_place."?notexistent");
+	}
+	//in case userpassword is wrong
+	else if ($_REQUEST['form_username']==$user_name && $_REQUEST['form_userpassword']!=$user_password) {
+		header("Location: ".$url_place."?psswrd_wrong");
+	}
+	//in case both username and password is correct
+	else if ($_REQUEST['form_username']==$user_name && $_REQUEST['form_userpassword']==$user_password) {
+		header("Location: ".$url_place."?success");
+	// create session variables
+$_SESSION['ses_username'] = $user_name;
+$_SESSION['ses_userpassword'] = $user_password;
+$_SESSION['ses_userfullname'] = $user_fullname;
+$_SESSION['ses_userfulladdress'] = $user_fulladress;
+	} //login button end
+	
+}
+?>
+
+
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -24,12 +63,39 @@
 		      	</div>
 		      	<h3 class="text-center mb-4">MyTumblr Login</h3>
 						
-						<form action="#" class="login-form">
-		      		<div class="form-group">
-		      			<input type="text" class="form-control rounded-left" placeholder="Username" required>
+
+
+
+
+						<form method ="POST" class="login-form">
+		      		<div class="form-group" >
+		      			<?php
+		      			if(isset($_REQUEST['notexistent'])=== true){
+									echo "<div class = 'alert alert-warning' role='alert'> Username do not exist! </div>";
+		      			} else if (isset($_REQUEST['psswrd_wrong'])=== true) {
+		      				echo "<div class = 'alert alert-danger' role='alert'> Invalid password! </div>";
+		      			}
+		      			  else if (isset($_REQUEST['success'])===true){
+									echo "<div class = 'alert alert-success' role='alert'> Redirecting... </div>";
+									header("Refresh: 5; url= account.php");
+		      			
+		      			}else if (isset($_REQUEST['log_out'])===true){
+		      				echo "<div class='alert alert-info' role='alert'> Thank you... </div>";
+		      			
+		      			}else if(isset($_REQUEST['logfirst'])===true){
+		      				echo "<div class='alert alert-info' role='alert'> Please Login First... </div>";
+		      			
+		      			}else if (isset($_SESSION['ses_username'])===true){
+		      				echo "<div class='alert alert-danger' role='alert'> You are still logged in. Please click <a href='account.php'> here to proceed. </div>";
+		      			}
+	
+		      			?>
+		     
+	  
+		      			<input type="text" class="form-control rounded-left" placeholder="Username" name="form_username" required>
 		      		</div>
 	            <div class="form-group d-flex">
-	              <input type="password" class="form-control rounded-left" placeholder="Password" required>
+	              <input type="password" class="form-control rounded-left" placeholder="Password" name= "form_userpassword"required>
 	            </div>
 	            <div class="form-group d-md-flex">
 	            	<div class="w-50">
@@ -43,9 +109,11 @@
 								</div>
 	            </div>
 	            <div class="form-group">
-	            	<button type="submit" class="btn btn-primary rounded submit p-3 px-5">Get Started</button>
+	            	<button type="submit" class="btn btn-primary rounded submit p-3 px-5" name="login-button">Get Started</button>
 	            </div>
+	    
 	          </form>
+
 	        </div>
 				</div>
 			</div>
